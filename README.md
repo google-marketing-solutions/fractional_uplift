@@ -137,29 +137,29 @@ However, many use-cases for uplift modelling do not meet this criteria, especial
 
 In these cases, Fractional Uplift can be used to find the most optimal segments of customers to target, by directly modelling the CATE of the costs of your treatment as well as your target KPIs. This is a generalisation of the fractional approximation approach proposed by [Goldenberg, Albert, Bernardi and Estevez [2]](https://dl.acm.org/doi/10.1145/3383313.3412215). It works by estimating the following function, which is generalised from the a composition of the Conditional Average Treatment Effects (CATE's) of three different metrics:
 
-$$
+```math
 f_\delta(X)= 
 \begin{cases}
     \frac{\text{CATE}_\alpha (X)}{\text{CATE}_\beta(X) - \frac{\text{CATE}_\gamma (X)}{\delta}},& \text{CATE}_\beta(X) > \frac{\text{CATE}_\gamma (X)}{\delta}\\
     \infty,              & \text{otherwise}
 \end{cases}
-$$
+```
 
-Where the CATE of a metric $$y$$ is defined as:
+Where the CATE of a metric $y$ is defined as:
 
-$$
+```math
 \text{CATE}_y(X) = E[y | T=1, X] - E[y | T=0, X]
-$$
+```
 
-Where $$T$$ indicates whether the sample was treated, and $$X$$ is a set of predictors. 
-The four metrics $$\alpha$$, $$\beta$$, $$\gamma$$ and $$\delta$$ are referred to as:
+Where $T$ indicates whether the sample was treated, and $X$ is a set of predictors. 
+The four metrics $\alpha$, $\beta$, $\gamma$ and $\delta$ are referred to as:
 
-* $$\alpha$$ is the "Maximize KPI" - the KPI to be maximized
-* $$\beta$$ is the "Constraint KPI" - the KPI that acts as a constraint, and we want to keep as low as possible.
-* $$\gamma$$ is the "Constraint Offset KPI" - the KPI that can offset the constraint. This is optional.
-* $$\delta$$ is the "Constraint Offset Scale" - a constant which scales the constraint_offset_kpi. Not needed if there is no constraint_offset_kpi.
+* $\alpha$ is the "Maximize KPI" - the KPI to be maximized
+* $\beta$ is the "Constraint KPI" - the KPI that acts as a constraint, and we want to keep as low as possible.
+* $\gamma$ is the "Constraint Offset KPI" - the KPI that can offset the constraint. This is optional.
+* $\delta$ is the "Constraint Offset Scale" - a constant which scales the constraint_offset_kpi. Not needed if there is no constraint_offset_kpi.
 
-Many business optimisation problems can be posed as uplift modeling problems like this, by choosing the appropriate Maximize, Constraint and Constraint Offset KPIs. Perhaps the most common case is discussed in detail by [Goldenberg, Albert, Bernardi and Estevez [2]](https://dl.acm.org/doi/10.1145/3383313.3412215). They consider a problem where you want to use a promotion to maximize the number of converting customers, while meeting an ROI constraint. Their solution can be rephrased as a fractional uplift modelling problem by targeting customers based on $$f_\delta(X)$$ where:
+Many business optimisation problems can be posed as uplift modeling problems like this, by choosing the appropriate Maximize, Constraint and Constraint Offset KPIs. Perhaps the most common case is discussed in detail by [Goldenberg, Albert, Bernardi and Estevez [2]](https://dl.acm.org/doi/10.1145/3383313.3412215). They consider a problem where you want to use a promotion to maximize the number of converting customers, while meeting an ROI constraint. Their solution can be rephrased as a fractional uplift modelling problem by targeting customers based on $f_\delta(X)$ where:
 
 * Maximize KPI = The number of conversions
 * Constraint KPI = The cost of the treatment
@@ -209,25 +209,27 @@ Therefore, prior to fitting the uplift model, you will need to fit a propensity 
 
 Train up to 6 ML models:
 
-$$
-\alpha_i(X) = E[\alpha | T=i, X] \text{for} i \text{in} (0, 1)
-$$
+```math
+\alpha_i(X) = E[\alpha | T=i, X] \quad \text{for} \, i \in [0, 1]
+```
 
-$$
-\beta_i(X) = E[\beta | T=i, X] \text{for} i \text{in} (0, 1)
-$$
+```math
+\beta_i(X) = E[\beta | T=i, X] \quad \text{for} \, i \in [0, 1]
+```
 
-$$
-\gamma_i(X) = E[\gamma | T=i, X] \text{for} i \text{in} (0, 1)
-$$
+```math
+\gamma_i(X) = E[\gamma | T=i, X] \quad \text{for} \, i \in [0, 1]
+```
+
+When training these models, the samples must be weighed by the inverse propensity weights, $w_\text{ipw}$. These control for the likelihood that the sample was treated. If the data was generated in a randomised experiment, then the inverse propensity weights will be fixed and always equal to the inverse of the fraction of traffic that was assigned to the treatment group (for example 2.0 if it was a 50/50 split, or 4.0 if only 25% of traffic was treated). For an observational study they will need to be learned with a propensity model. 
 
 #### Stage 2
 
-Define $$f_\delta(X)$$ as:
+Define $f_\delta(X)$ as:
 
-$$
+```math
 f_\delta(X) = \frac{\alpha_1(X) - \alpha_0(X)}{\beta_1(X) - \beta_0(X) - \frac{\gamma_1(X) - \gamma_0(X)}{\delta}}
-$$
+```
 
 ### Fractional Retrospective Learner Algorithm
 
@@ -238,86 +240,86 @@ Here we transform the problem from regression problems into classification probl
 Train 1 ML model per component to learn the incrementality of each component. 
 These models use an adaptation of the retrospective estimation method described by [Goldenberg, Albert, Bernardi and Estevez [2]](https://dl.acm.org/doi/10.1145/3383313.3412215), where the problem is transformed into estimating:
 
-$$
+```math
 y_\alpha = \frac{E[\alpha | T=1, X]}{E[\alpha | T=1, X] + E[\alpha | T=0, X]}
-$$
+```
 
-$$
+```math
 y_\beta = \frac{E[\beta | T=1, X]}{E[\beta | T=1, X] + E[\beta | T=0, X]}
-$$
+```
 
-$$
+```math
 y_\gamma = \frac{E[\gamma | T=1, X]}{E[\gamma | T=1, X] + E[\gamma | T=0, X]}
-$$
+```
 
-These can be models as simple binomial classification problems. For example, to estimate $$y_\alpha$$, you would train a classifier with the following training data:
+These can be models as simple binomial classification problems. For example, to estimate $y_\alpha$, you would train a classifier with the following training data:
 
 * Features: X
 * Label: T
-* Weights: $$\alpha$$ * inverse propensity weights
+* Weights: $\alpha \times w_\text{ipw}$
 
-Here the inverse propensity weights control for the likelihood that the sample was treated. If the data was generated in a randomised experiment, then the inverse propensity weights will be fixed. Otherwise they will need to be learned from a propensity model. 
+Here $w_\text{ipw}$ are the inverse propensity weights, the same as in the Fractional Learner Algorithm.
 
 Note: The classifier used must be [calibrated](https://www.unofficialgoogledatascience.com/2021/04/why-model-calibration-matters-and-how.html), meaning it must produce a score that can be interpreted as a probability.
 
 #### Stage 2
 
-Now we need to learn the weights of the three components, $$\alpha$$, $$\beta$$ and $$\gamma$$:
+Now we need to learn the weights of the three components, $\alpha$, $\beta$ and $\gamma$:
 
-$$
+```math
 w_\alpha = \frac{E[\alpha | X]}{E[\alpha | X] + E[\beta | X] + E[\gamma | X]}
-$$
+```
 
-$$
+```math
 w_\beta = \frac{E[\beta | X]}{E[\alpha | X] + E[\beta | X] + E[\gamma | X]}
-$$
+```
 
-$$
+```math
 w_\gamma = \frac{E[\gamma | X]}{E[\alpha | X] + E[\beta | X] + E[\gamma | X]}
-$$
+```
 
 We learn these using a single multi-class classifier on an augmented dataset. We create three copies of the training data:
 
 Dataset 1:
 
 * Features: X
-* Label: Class 0
-* Weights: $$\alpha$$ * inverse propensity weights
+* Label: 0
+* Weights: $\alpha \times w_\text{ipw} $
 
 Dataset 2:
 
 * Features: X
-* Label: Class 1
-* Weights: $$\beta$$ * inverse propensity weights
+* Label: 1
+* Weights: $\beta \times w_\text{ipw}$
 
 Dataset 3:
 
 * Features: X
-* Label: Class 2
-* Weights: $$\gamma$$ * inverse propensity weights
+* Label: 2
+* Weights: $\gamma \times w_\text{ipw}$
 
 Then we concatenate these and train the mutli-class classifier on the resulting dataset. 
-The outputs of the multiclass classifier, $$p_\text{class=c}(X)$$ can then be interpreted as:
+The outputs of the multiclass classifier, $p_\text{class=c}(X)$ can then be interpreted as:
 
-$$
-w_\alpha = p_\text{class=0}(X)
-$$
+```math
+w_\alpha = p_\text{label=0}(X)
+```
 
-$$
-w_\beta = p_\text{class=1}(X)
-$$
+```math
+w_\beta = p_\text{label=1}(X)
+```
 
-$$
-w_\gamma = p_\text{class=2}(X)
-$$
+```math
+w_\gamma = p_\text{label=2}(X)
+```
 
 #### Stage 3
 
-Now we can calculate $$f_\delta(X)$$ as:
+Now we can calculate $f_\delta(X)$ as:
 
-$$
+```math
 f_\delta(X) = \frac{(2 y_\alpha (X) - 1) \, w_\alpha (X)}{(2 y_\beta (X) - 1) \, w_\beta (X)  - \frac{(2 y_\gamma (X) - 1) \, w_\gamma (X)}{\delta}}
-$$
+```
 
 ## Citing Fractional Ulift
 
