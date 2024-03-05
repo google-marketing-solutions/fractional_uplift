@@ -1,6 +1,21 @@
-# Fractional Uplift
-### Flexible uplift modelling with complex or constrained metrics.
-##### This is not an official Google product.
+<img align="left" width="100" src="./images/fractional_uplift_logo.png" alt="fractional_uplift_logo" /><br>
+
+# Fractional Uplift: Flexible uplift modelling with complex or constrained metrics.
+
+[![python](https://img.shields.io/badge/Python->=3.10-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![PyPI](https://img.shields.io/pypi/v/fractional-uplift?logo=pypi&logoColor=white&style=flat)](https://pypi.org/project/fractional-uplift/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/google-marketing-solutions/fractional_uplift)](https://github.com/google-marketing-solutions/fractional_uplift/commits)
+[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://google.github.io/styleguide/pyguide.html)
+
+**Disclaimer: This is not an official Google product.**
+
+[Introduction](#introduction) •
+[Installation](#installation) •
+[Quick Start](#quick-start) •
+[Comparison](#how-does-fractional-uplift-compare-with-other-uplift-modelling-packages) •
+[Data Requirements](#data-requirements) •
+[Available learners](#available-learners) •
+[Citing and references](#citing-fractional-uplift)
 
 ## Introduction
 
@@ -15,7 +30,7 @@ Fractional Uplift has been designed with the following goals in mind:
 ## Installation
 
 ```
-$ pip install fractional_uplift
+$ pip install fractional-uplift
 ```
 
 ## Quick Start
@@ -321,7 +336,7 @@ Now we can calculate $f_\delta(X)$ as:
 f_\delta(X) = \frac{(2 y_\alpha (X) - 1) \, w_\alpha (X)}{(2 y_\beta (X) - 1) \, w_\beta (X)  - \frac{(2 y_\gamma (X) - 1) \, w_\gamma (X)}{\delta}}
 ```
 
-## Citing Fractional Ulift
+## Citing Fractional Uplift
 
 To cite this repository:
 
@@ -329,7 +344,7 @@ To cite this repository:
 @software{fractional_uplift,
   author = {Sam Bailey and Christiane Ahlheim},
   title = {Fractional Uplift: Flexible uplift modelling with complex or constrained metrics.},
-  url = {https://github.com/google/fractional_uplift},
+  url = {https://github.com/google-marketing-solutions/fractional_uplift},
   version = {0.0.1},
   year = {2023},
 }
