@@ -13,7 +13,7 @@
 # limitations under the License.
 
 tensorflow-decision-forests
-tensorflow
+tensorflow>=2.13
 numpy
 pandas
 scikit-learn
