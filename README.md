@@ -19,12 +19,12 @@
 
 ## Introduction
 
-Fractional Uplift is a flexible Python package for uplift modelling with meta learners, which can be used to target adverts, promotions or other treatments towards the most incremental customers, in order to maximise the return on investment (RoI) or another KPI. 
+Fractional Uplift is a flexible Python package for uplift modelling with meta learners, which can be used to target adverts, promotions or other treatments towards the most incremental customers, in order to maximise the return on investment (RoI) or another KPI.
 
 Fractional Uplift has been designed with the following goals in mind:
 
-1. It is designed to optimise for complex metrics or metrics with constraints, which typically cannot be optimized with regular uplift modelling solutions. This is especially important when optimizing promotions with costs that can vary per customer.
-2. It is designed to be flexible, so that it can be used with any machine learning and data processing packages. 
+1. It is designed to optimise for complex metrics or metrics with constraints, which typically cannot be optimized with regular uplift modelling solutions. This is especially important when optimizing promotions with costs that can vary per customer. See [examples/end_to_end_example.ipynb](https://github.com/google-marketing-solutions/fractional_uplift/blob/main/examples/end_to_end_example.ipynb) for a demo that uses Fractional Uplift to optimise for a variety of common marketing objectives.
+2. It is designed to be flexible, so that it can be used with any machine learning and data processing packages. See [examples/using_custom_ml_and_data_processing_packages.ipynb](https://github.com/google-marketing-solutions/fractional_uplift/blob/main/examples/using_custom_ml_and_data_processing_packages.ipynb) for a demonstration of this.
 3. It is designed to make the resulting models easy to deploy, by using [Knowledge Distillation [1]](https://arxiv.org/abs/1503.02531) to distill the complex meta learners into a single ML model.
 
 ## Installation
