@@ -17,145 +17,122 @@
 For now this is experimental. It is not being used in fractional uplift.
 """
 
-import abc
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
+from fractional_uplift.data_processor_api.datasets import base
 
-class Dataset(abc.ABC):
-  """A base class for a dataset.
+
+class PandasDataset(base.Dataset):
+  """A dataset that is backed by pandas.
 
   The dataset can perform a variety of data processing actions, and can export
-  the dataset to a varity of formats. It must be subclassed, and each subclass
-  will internally store and process the data using different packages, such as
-  pandas.
-
-  Subclassing this allows you to integrate Fractional Uplift with any data
-  processing tech stack.
-
-  In addition to defining all the abstract methods, you must define an __init__
-  method, which takes as an input the actual data for this dataset. Then all
-  the methods must be defined to make changes to this data using your data
-  processing package.
+  the dataset to a varity of formats, but it stores and manipulates the data
+  with pandas.
   """
 
-  @abc.abstractmethod
+  def __init__(self, data: pd.DataFrame):
+    self.data = data
+
+  def as_pd_dataframe(self) -> pd.DataFrame:
+    """Returns the dataset as a pandas dataframe."""
+    return self.data
+
   def column_is_not_negative(self, column_name: str) -> bool:
     """Returns true if the column is not negative for all rows."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def column_exists(self, column_name: str) -> bool:
     """Returns true if the column exists in the dataset."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
-  def copy(self) -> "Dataset":
+  def copy(self) -> "PandasDataset":
     """Returns a copy of the dataset."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_constant(
       self, column_name: str, column_value: Any
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column with the given name and constant value."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_numpy_array(
       self, column_name: str, column_values: np.ndarray
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column from a numpy array."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
-  def filter(self, mask_column: str) -> "Dataset":
+  def filter(self, mask_column: str) -> "PandasDataset":
     """Filters the dataset to only rows where the mask_column is true."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
-  def append_rows(self, data: "Dataset") -> "Dataset":
+  def append_rows(self, data: "PandasDataset") -> "PandasDataset":
     """Appends the rows of the given dataset to the end of this dataset."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_subtraction(
       self,
       *,
       output_column_name: str,
       minuend_column_name: str,
       subtrahend_column_name: str,
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column as the subtraction of the minuend and subtrahend."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_addition(
       self, output_column_name: str, *addition_column_names: str
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column that is the sum of the addition column names."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_division(
       self,
       output_column_name: str,
       numerator_column_name: str,
       denominator_column_name: str,
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column as the division of the numerator and denominator."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def set_column_from_multiplication(
       self, output_column_name: str, *multiply_column_names: str
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Creates a column as the multiplication of all the multiply_column_names."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
-  def drop(self, *drop_columns: str) -> "Dataset":
+  def drop(self, *drop_columns: str) -> "PandasDataset":
     """Drops the columns named in drop_columns from the dataset."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def labels_are_constant(self) -> bool | None:
     """Are the labels constant?
 
     Returns true if the labels are the same for every row in the dataset,
     false otherwise, and None if there are no labels.
     """
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def label_average(self) -> float | None:
     """Return the average label, weighted by the weights if they exist."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def __len__(self) -> int:
     """Return the number of rows in the dataset."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def shuffle_inplace(self) -> None:
     """Shuffles the rows of the dataset inplace."""
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
-  def as_pd_dataframe(self) -> pd.DataFrame:
-    """Returns the dataset as a pandas dataframe."""
-    ...
-
-  @abc.abstractmethod
   def select_features_labels_and_weights(
       self,
       feature_columns: list[str],
       label_column: str | None = None,
       weight_column: str | None = None,
-  ) -> "Dataset":
+  ) -> "PandasDataset":
     """Returns a dataset with the given features, labels, and weights.
 
     The features retain their existing column names, but the labels and weights
@@ -169,9 +146,8 @@ class Dataset(abc.ABC):
       weight_column: The weight column to include in the dataset. This will be
         renamed to "weight_". If None, then no weights are added.
     """
-    ...
+    raise NotImplementedError()
 
-  @abc.abstractmethod
   def get_columns(self) -> list[str]:
     """Returns the column names in the dataset."""
-    ...
+    raise NotImplementedError()

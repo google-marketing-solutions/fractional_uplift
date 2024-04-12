@@ -12,16 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A module containing the classes for creating uplift modelling datasets.
+from absl.testing import absltest
+from absl.testing import parameterized
+import numpy as np
+import pandas as pd
 
-All the datasets to be used for uplift modelling must inherit from this.
-It works like an API to allow different data sources to be used to train uplift
-models.
-"""
-
-from fractional_uplift.data_processor_api.datasets import base
-from fractional_uplift.data_processor_api.datasets import pandas
+from fractional_uplift.data_processor_api import datasets
 
 
-Dataset = base.Dataset
-PandasDataset = pandas.PandasDataset
+class PandasDatasetTest(parameterized.TestCase):
+
+  def test_dataset_is_initialised(self):
+    input_data = pd.DataFrame({"col_1": [1, 2, 3]})
+    data = datasets.PandasDataset(input_data)
+    pd.testing.assert_frame_equal(
+        data.as_pd_dataframe(),
+        input_data,
+    )
+
+
+if __name__ == "__main__":
+  absltest.main()
