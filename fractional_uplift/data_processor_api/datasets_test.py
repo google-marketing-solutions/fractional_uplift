@@ -55,6 +55,17 @@ class PandasDatasetTest(parameterized.TestCase):
     data = datasets.PandasDataset(input_data)
     self.assertFalse(data.column_exists("col_2"))
 
+  def test_copy_makes_a_copy_of_the_data(self):
+    input_data = pd.DataFrame({"col_1": [1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    data_copy = data.copy()
+
+    pd.testing.assert_frame_equal(
+        data.as_pd_dataframe(), data_copy.as_pd_dataframe()
+    )
+    self.assertIsNot(data_copy, data)
+    self.assertIsNot(data.as_pd_dataframe(), data_copy.as_pd_dataframe())
+
 
 if __name__ == "__main__":
   absltest.main()

@@ -50,7 +50,7 @@ class PandasDataset(base.Dataset):
 
   def copy(self) -> "PandasDataset":
     """Returns a copy of the dataset."""
-    raise NotImplementedError()
+    return self.__class__(data=self.data.copy())
 
   def set_column_from_constant(
       self, column_name: str, column_value: Any
