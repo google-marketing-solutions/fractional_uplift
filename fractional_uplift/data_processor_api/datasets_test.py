@@ -30,6 +30,21 @@ class PandasDatasetTest(parameterized.TestCase):
         input_data,
     )
 
+  def test_column_is_not_negative_returns_true_for_non_negative_column(self):
+    input_data = pd.DataFrame({"col_1": [0.0, 1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    self.assertTrue(data.column_is_not_negative("col_1"))
+
+  def test_column_is_not_negative_returns_false_for_negative_column(self):
+    input_data = pd.DataFrame({"col_1": [-1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    self.assertFalse(data.column_is_not_negative("col_1"))
+
+  def test_column_is_not_negative_returns_false_for_nan_values(self):
+    input_data = pd.DataFrame({"col_1": [np.nan, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    self.assertFalse(data.column_is_not_negative("col_1"))
+
 
 if __name__ == "__main__":
   absltest.main()

@@ -42,7 +42,7 @@ class PandasDataset(base.Dataset):
 
   def column_is_not_negative(self, column_name: str) -> bool:
     """Returns true if the column is not negative for all rows."""
-    raise NotImplementedError()
+    return np.all(self.data[column_name].values >= 0.0)
 
   def column_exists(self, column_name: str) -> bool:
     """Returns true if the column exists in the dataset."""
