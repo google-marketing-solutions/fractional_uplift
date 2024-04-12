@@ -45,6 +45,16 @@ class PandasDatasetTest(parameterized.TestCase):
     data = datasets.PandasDataset(input_data)
     self.assertFalse(data.column_is_not_negative("col_1"))
 
+  def test_column_exists_returns_true_if_column_exists(self):
+    input_data = pd.DataFrame({"col_1": [1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    self.assertTrue(data.column_exists("col_1"))
+
+  def test_column_exists_returns_false_if_column_not_exists(self):
+    input_data = pd.DataFrame({"col_1": [1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+    self.assertFalse(data.column_exists("col_2"))
+
 
 if __name__ == "__main__":
   absltest.main()

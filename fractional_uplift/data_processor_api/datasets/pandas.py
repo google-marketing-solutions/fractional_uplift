@@ -46,7 +46,7 @@ class PandasDataset(base.Dataset):
 
   def column_exists(self, column_name: str) -> bool:
     """Returns true if the column exists in the dataset."""
-    raise NotImplementedError()
+    return column_name in self.data.columns
 
   def copy(self) -> "PandasDataset":
     """Returns a copy of the dataset."""
