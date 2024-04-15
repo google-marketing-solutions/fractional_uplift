@@ -251,6 +251,38 @@ class PandasDatasetTest(parameterized.TestCase):
         output_data.as_pd_dataframe(), expected_output_data
     )
 
+  def test_set_column_from_multiplication_sets_the_column_correctly(
+      self,
+  ):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [5.0, -2.0, 0.0]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.set_column_from_multiplication("col_3", "col_1", "col_2")
+
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
+  def test_set_column_from_multiplication_raises_error_if_no_multiply_columns_are_passed(
+      self,
+  ):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [5.0, -2.0, 3.0]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(
+        ValueError, "The multiply column names cannot be empty"
+    ):
+      data.set_column_from_multiplication("col_3")
+
 
 if __name__ == "__main__":
   absltest.main()

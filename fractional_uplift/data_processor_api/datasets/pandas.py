@@ -139,7 +139,14 @@ class PandasDataset(base.Dataset):
       self, output_column_name: str, *multiply_column_names: str
   ) -> "PandasDataset":
     """Creates a column as the multiplication of all the multiply_column_names."""
-    raise NotImplementedError()
+    if not multiply_column_names:
+      raise ValueError("The multiply column names cannot be empty.")
+
+    self.data[output_column_name] = 1.0
+    for multiply_column_name in multiply_column_names:
+      self.data[output_column_name] *= self.data[multiply_column_name]
+
+    return self
 
   def drop(self, *drop_columns: str) -> "PandasDataset":
     """Drops the columns named in drop_columns from the dataset."""
