@@ -77,7 +77,19 @@ class Dataset(abc.ABC):
 
   @abc.abstractmethod
   def append_rows(self, data: "Dataset") -> "Dataset":
-    """Appends the rows of the given dataset to the end of this dataset."""
+    """Appends the rows of the given dataset to the end of this dataset.
+
+    This ignores the index of the pandas dataframe, so the index gets reset.
+
+    Args:
+      data: The dataset to append to this dataset.
+
+    Returns:
+      The concatenated dataset.
+
+    Raises:
+      ValueError: If the columns don't match between the two datasets.
+    """
     ...
 
   @abc.abstractmethod

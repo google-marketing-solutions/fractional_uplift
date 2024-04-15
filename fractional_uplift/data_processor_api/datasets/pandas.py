@@ -72,8 +72,30 @@ class PandasDataset(base.Dataset):
     return self
 
   def append_rows(self, data: "PandasDataset") -> "PandasDataset":
-    """Appends the rows of the given dataset to the end of this dataset."""
-    raise NotImplementedError()
+    """Appends the rows of the given dataset to the end of this dataset.
+
+    This ignores the index of the pandas dataframe, so the index gets reset.
+
+    Args:
+      data: The dataset to append to this dataset.
+
+    Returns:
+      The concatenated dataset.
+
+    Raises:
+      ValueError: If the columns don't match between the two datasets.
+    """
+    if set(self.get_columns()) != set(data.get_columns()):
+      raise ValueError(
+          "The columns don't match between the two datasets:"
+          f" {self.get_columns() = } != {data.get_columns() = }"
+      )
+
+    self.data = pd.concat(
+        [self.data, data.as_pd_dataframe()[self.get_columns()]],
+        ignore_index=True,
+    )
+    return self
 
   def set_column_from_subtraction(
       self,

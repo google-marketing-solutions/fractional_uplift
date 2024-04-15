@@ -115,6 +115,68 @@ class PandasDatasetTest(parameterized.TestCase):
 
     self.assertListEqual(data.get_columns(), ["col_1", "col_2"])
 
+  def test_append_rows_appends_the_second_dataframe_to_the_first(self):
+    input_data_1 = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": ["a", "b", "c"]}
+    )
+    data_1 = datasets.PandasDataset(input_data_1)
+
+    input_data_2 = pd.DataFrame(
+        {"col_1": [8.0, 9.0, 10.0], "col_2": ["g", "h", "i"]}
+    )
+    data_2 = datasets.PandasDataset(input_data_2)
+
+    output_data = data_1.append_rows(data_2)
+
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0],
+        "col_2": ["a", "b", "c", "g", "h", "i"],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
+  def test_append_rows_aligns_the_columns_of_the_second_dataset_with_the_first(
+      self,
+  ):
+    input_data_1 = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": ["a", "b", "c"]}
+    )
+    data_1 = datasets.PandasDataset(input_data_1)
+
+    input_data_2 = pd.DataFrame(
+        {"col_2": ["g", "h", "i"], "col_1": [8.0, 9.0, 10.0]}
+    )
+    data_2 = datasets.PandasDataset(input_data_2)
+
+    output_data = data_1.append_rows(data_2)
+
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0],
+        "col_2": ["a", "b", "c", "g", "h", "i"],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
+  def test_append_rows_raise_excption_if_columns_dont_match(self):
+    input_data_1 = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": ["a", "b", "c"]}
+    )
+    data_1 = datasets.PandasDataset(input_data_1)
+
+    input_data_2 = pd.DataFrame({
+        "col_1": [8.0, 9.0, 10.0],
+        "col_2": ["g", "h", "i"],
+        "col_3": [1.0, 2.0, 3.0],
+    })
+    data_2 = datasets.PandasDataset(input_data_2)
+
+    with self.assertRaisesRegex(
+        ValueError, "The columns don't match between the two datasets:"
+    ):
+      data_1.append_rows(data_2)
+
 
 if __name__ == "__main__":
   absltest.main()
