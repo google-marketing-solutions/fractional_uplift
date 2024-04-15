@@ -165,6 +165,7 @@ class Dataset(abc.ABC):
   def select_features_labels_and_weights(
       self,
       feature_columns: list[str],
+      *,
       label_column: str | None = None,
       weight_column: str | None = None,
   ) -> "Dataset":
@@ -175,11 +176,24 @@ class Dataset(abc.ABC):
     they are not added.
 
     Args:
-      feature_columns: The feature columns to include in the dataset.
+      feature_columns: The feature columns to include in the dataset. This
+        cannot be empty.
       label_column: The label column to include in the dataset. This will be
-        renamed to "label_". If None, then no labels are added.
+        renamed to "label_". If None, then no labels are added. The label column
+        must always be numeric. For classification problems, the label should be
+        an integer with a different value for each class, while for regression
+        it can be either integer or float.
       weight_column: The weight column to include in the dataset. This will be
-        renamed to "weight_". If None, then no weights are added.
+        renamed to "weight_". If None, then no weights are added. The weight
+        column must be numeric and non-negaitve.
+
+    Raises:
+      ValueError: if either "label_" or "weight_" is one of the features.
+      ValueError: if the weights are non-numeric or negative.
+      ValueError: if the label is non-numeric.
+      ValueError: if the feature columns lits is empty.
+      ValueError: if there is any overlap between the label, weight and feature
+        columns.
     """
     ...
 

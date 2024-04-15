@@ -22,7 +22,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from fractional_uplift import constants
 from fractional_uplift.data_processor_api.datasets import base
+
+
+ColumnName = constants.ColumnName
 
 
 class PandasDataset(base.Dataset):
@@ -153,6 +157,73 @@ class PandasDataset(base.Dataset):
     self.data.drop(columns=list(drop_columns), inplace=True)
     return self
 
+  def select_features_labels_and_weights(
+      self,
+      feature_columns: list[str],
+      *,
+      label_column: str | None = None,
+      weight_column: str | None = None,
+  ) -> "PandasDataset":
+    """Returns a dataset with the given features, labels, and weights.
+
+    The features retain their existing column names, but the labels and weights
+    are renamed to labels_ and weights_. If the labels or weights are None then
+    they are not added.
+
+    Args:
+      feature_columns: The feature columns to include in the dataset. This
+        cannot be empty.
+      label_column: The label column to include in the dataset. This will be
+        renamed to "label_". If None, then no labels are added. The label column
+        must always be numeric. For classification problems, the label should be
+        an integer with a different value for each class, while for regression
+        it can be either integer or float.
+      weight_column: The weight column to include in the dataset. This will be
+        renamed to "weight_". If None, then no weights are added. The weight
+        column must be numeric and non-negaitve.
+
+    Raises:
+      ValueError: if either "label_" or "weight_" is one of the features.
+      ValueError: if the weights are non-numeric or negative.
+      ValueError: if the label is non-numeric.
+      ValueError: if the feature columns lits is empty.
+      ValueError: if there is any overlap between the label, weight and feature
+        columns.
+    """
+    if ColumnName.LABEL.value in feature_columns:
+      raise ValueError("The features cannot contain a column named 'label_'")
+    if ColumnName.WEIGHT.value in feature_columns:
+      raise ValueError("The features cannot contain a column named 'weight_'")
+
+    if not feature_columns:
+      raise ValueError("The feature columns cannot be empty")
+
+    non_none_labels_and_weights = {}
+    if label_column:
+      non_none_labels_and_weights[label_column] = ColumnName.LABEL.value
+      if not pd.api.types.is_numeric_dtype(self.data[label_column]):
+        raise ValueError("The label column must be numeric.")
+    if weight_column:
+      non_none_labels_and_weights[weight_column] = ColumnName.WEIGHT.value
+      if not pd.api.types.is_numeric_dtype(self.data[weight_column]):
+        raise ValueError("The weight column must be numeric.")
+      if not self.column_is_not_negative(weight_column):
+        raise ValueError("The weight column must be non-negative.")
+
+    select_columns = feature_columns + list(non_none_labels_and_weights.keys())
+
+    unique_columns = set(select_columns)
+    if len(unique_columns) < len(select_columns):
+      raise ValueError(
+          "There are duplicate columns. Check you are not using the same column"
+          " name more than once across feaures, labels or weights."
+      )
+
+    self.data = self.data[select_columns]
+    self.data = self.data.rename(columns=non_none_labels_and_weights)
+
+    return self
+
   def labels_are_constant(self) -> bool | None:
     """Are the labels constant?
 
@@ -171,27 +242,6 @@ class PandasDataset(base.Dataset):
 
   def shuffle_inplace(self) -> None:
     """Shuffles the rows of the dataset inplace."""
-    raise NotImplementedError()
-
-  def select_features_labels_and_weights(
-      self,
-      feature_columns: list[str],
-      label_column: str | None = None,
-      weight_column: str | None = None,
-  ) -> "PandasDataset":
-    """Returns a dataset with the given features, labels, and weights.
-
-    The features retain their existing column names, but the labels and weights
-    are renamed to labels_ and weights_. If the labels or weights are None then
-    they are not added.
-
-    Args:
-      feature_columns: The feature columns to include in the dataset.
-      label_column: The label column to include in the dataset. This will be
-        renamed to "label_". If None, then no labels are added.
-      weight_column: The weight column to include in the dataset. This will be
-        renamed to "weight_". If None, then no weights are added.
-    """
     raise NotImplementedError()
 
   def get_columns(self) -> list[str]:

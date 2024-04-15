@@ -300,6 +300,168 @@ class PandasDatasetTest(parameterized.TestCase):
         output_data.as_pd_dataframe(), expected_output_data
     )
 
+  def test_select_features_labels_and_weights_can_select_only_features(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.select_features_labels_and_weights(
+        feature_columns=["col_1", "col_2"]
+    )
+
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
+  def test_select_features_labels_and_weights_can_select_features_labels_and_weights(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+        label_column="col_2",
+        weight_column="col_1",
+    )
+
+    expected_output_data = pd.DataFrame({
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+        "label_": [5.0, -2.0, 0.0],
+        "weight_": [1.0, 2.0, 3.0],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
+  def test_select_features_labels_and_weights_raises_error_if_no_feature_columns_are_passed(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(
+        ValueError, "The feature columns cannot be empty"
+    ):
+      data.select_features_labels_and_weights(feature_columns=[])
+
+  @parameterized.parameters("label_", "weight_")
+  def test_select_features_labels_and_weights_raises_error_if_protected_column_is_in_features(
+      self, protected_column: str
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(
+        ValueError,
+        f"The features cannot contain a column named '{protected_column}'",
+    ):
+      data.select_features_labels_and_weights(
+          feature_columns=["col_1", protected_column]
+      )
+
+  def test_select_features_labels_and_weights_raises_error_if_labels_are_not_numeric(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(ValueError, "The label column must be numeric"):
+      data.select_features_labels_and_weights(
+          feature_columns=["col_3", "col_1"],
+          label_column="col_4",
+          weight_column="col_1",
+      )
+
+  def test_select_features_labels_and_weights_raises_error_if_weights_are_not_numeric(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(
+        ValueError, "The weight column must be numeric"
+    ):
+      data.select_features_labels_and_weights(
+          feature_columns=["col_3", "col_1"],
+          label_column="col_2",
+          weight_column="col_4",
+      )
+
+  def test_select_features_labels_and_weights_raises_error_if_weights_are_not_negative(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(
+        ValueError, "The weight column must be non-negative"
+    ):
+      data.select_features_labels_and_weights(
+          feature_columns=["col_3", "col_4"],
+          label_column="col_1",
+          weight_column="col_2",
+      )
+
+  def test_select_features_labels_and_weights_raises_error_if_columns_are_duplicated(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    with self.assertRaisesRegex(ValueError, "There are duplicate columns."):
+      data.select_features_labels_and_weights(
+          feature_columns=["col_2", "col_4"],
+          label_column="col_2",
+          weight_column="col_1",
+      )
+
 
 if __name__ == "__main__":
   absltest.main()
