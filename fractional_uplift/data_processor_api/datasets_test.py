@@ -283,6 +283,23 @@ class PandasDatasetTest(parameterized.TestCase):
     ):
       data.set_column_from_multiplication("col_3")
 
+  def test_drop_drops_the_drop_columns(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.drop("col_2", "col_3")
+
+    expected_output_data = pd.DataFrame({"col_1": [1.0, 2.0, 3.0]})
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()

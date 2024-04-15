@@ -150,7 +150,8 @@ class PandasDataset(base.Dataset):
 
   def drop(self, *drop_columns: str) -> "PandasDataset":
     """Drops the columns named in drop_columns from the dataset."""
-    raise NotImplementedError()
+    self.data.drop(columns=list(drop_columns), inplace=True)
+    return self
 
   def labels_are_constant(self) -> bool | None:
     """Are the labels constant?
