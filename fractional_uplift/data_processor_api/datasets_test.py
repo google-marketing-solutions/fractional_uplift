@@ -66,6 +66,19 @@ class PandasDatasetTest(parameterized.TestCase):
     self.assertIsNot(data_copy, data)
     self.assertIsNot(data.as_pd_dataframe(), data_copy.as_pd_dataframe())
 
+  def test_set_column_from_constant_sets_the_column_correctly(self):
+    input_data = pd.DataFrame({"col_1": [1.0, 2.0, 3.0]})
+    data = datasets.PandasDataset(input_data)
+
+    data_output = data.set_column_from_constant("col_2", 5)
+
+    expected_output_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [5, 5, 5]}
+    )
+    pd.testing.assert_frame_equal(
+        data_output.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()

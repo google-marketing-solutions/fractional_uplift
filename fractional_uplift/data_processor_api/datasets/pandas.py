@@ -56,7 +56,8 @@ class PandasDataset(base.Dataset):
       self, column_name: str, column_value: Any
   ) -> "PandasDataset":
     """Creates a column with the given name and constant value."""
-    raise NotImplementedError()
+    self.data[column_name] = column_value
+    return self
 
   def set_column_from_numpy_array(
       self, column_name: str, column_values: np.ndarray
