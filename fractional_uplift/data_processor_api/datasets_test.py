@@ -92,6 +92,21 @@ class PandasDatasetTest(parameterized.TestCase):
         data_output.as_pd_dataframe(), expected_output_data
     )
 
+  def test_filter_filters_for_true_elements_of_the_mask_column(self):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [True, True, False]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    data_output = data.filter("col_2")
+
+    expected_output_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0], "col_2": [True, True]}
+    )
+    pd.testing.assert_frame_equal(
+        data_output.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()

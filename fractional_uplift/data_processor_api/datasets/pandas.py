@@ -68,7 +68,8 @@ class PandasDataset(base.Dataset):
 
   def filter(self, mask_column: str) -> "PandasDataset":
     """Filters the dataset to only rows where the mask_column is true."""
-    raise NotImplementedError()
+    self.data = self.data[self.data[mask_column]]
+    return self
 
   def append_rows(self, data: "PandasDataset") -> "PandasDataset":
     """Appends the rows of the given dataset to the end of this dataset."""
