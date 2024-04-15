@@ -153,4 +153,4 @@ class PandasDataset(base.Dataset):
 
   def get_columns(self) -> list[str]:
     """Returns the column names in the dataset."""
-    raise NotImplementedError()
+    return self.data.columns.values.tolist()

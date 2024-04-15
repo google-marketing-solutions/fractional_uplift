@@ -107,6 +107,14 @@ class PandasDatasetTest(parameterized.TestCase):
         data_output.as_pd_dataframe(), expected_output_data
     )
 
+  def test_get_columns_returns_a_list_of_column_names(self):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [True, True, False]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    self.assertListEqual(data.get_columns(), ["col_1", "col_2"])
+
 
 if __name__ == "__main__":
   absltest.main()
