@@ -113,8 +113,15 @@ class PandasDataset(base.Dataset):
   def set_column_from_addition(
       self, output_column_name: str, *addition_column_names: str
   ) -> "PandasDataset":
-    """Creates a column that is the sum of the addition column names."""
-    raise NotImplementedError()
+    """Creates a column as the addition of the addition_column_names."""
+    if not addition_column_names:
+      raise ValueError("The addition column names cannot be empty.")
+
+    self.data[output_column_name] = 0.0
+    for addition_column_name in addition_column_names:
+      self.data[output_column_name] += self.data[addition_column_name]
+
+    return self
 
   def set_column_from_division(
       self,
