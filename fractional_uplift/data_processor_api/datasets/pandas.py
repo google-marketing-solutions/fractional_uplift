@@ -63,7 +63,8 @@ class PandasDataset(base.Dataset):
       self, column_name: str, column_values: np.ndarray
   ) -> "PandasDataset":
     """Creates a column from a numpy array."""
-    raise NotImplementedError()
+    self.data[column_name] = column_values
+    return self
 
   def filter(self, mask_column: str) -> "PandasDataset":
     """Filters the dataset to only rows where the mask_column is true."""
