@@ -104,8 +104,11 @@ class PandasDataset(base.Dataset):
       minuend_column_name: str,
       subtrahend_column_name: str,
   ) -> "PandasDataset":
-    """Creates a column as the subtraction of the minuend and subtrahend."""
-    raise NotImplementedError()
+    """Creates a column as the subtraction of the subtrahend from the minuend."""
+    self.data[output_column_name] = (
+        self.data[minuend_column_name] - self.data[subtrahend_column_name]
+    )
+    return self
 
   def set_column_from_addition(
       self, output_column_name: str, *addition_column_names: str

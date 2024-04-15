@@ -100,7 +100,7 @@ class Dataset(abc.ABC):
       minuend_column_name: str,
       subtrahend_column_name: str,
   ) -> "Dataset":
-    """Creates a column as the subtraction of the minuend and subtrahend."""
+    """Creates a column as the subtraction of the subtrahend from the minuend."""
     ...
 
   @abc.abstractmethod
