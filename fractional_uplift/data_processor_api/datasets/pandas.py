@@ -130,7 +130,10 @@ class PandasDataset(base.Dataset):
       denominator_column_name: str,
   ) -> "PandasDataset":
     """Creates a column as the division of the numerator and denominator."""
-    raise NotImplementedError()
+    self.data[output_column_name] = (
+        self.data[numerator_column_name] / self.data[denominator_column_name]
+    )
+    return self
 
   def set_column_from_multiplication(
       self, output_column_name: str, *multiply_column_names: str

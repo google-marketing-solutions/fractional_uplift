@@ -232,6 +232,25 @@ class PandasDatasetTest(parameterized.TestCase):
     ):
       data.set_column_from_addition("col_3")
 
+  def test_set_column_from_division_sets_the_column_correctly(
+      self,
+  ):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [5.0, -2.0, 0.0]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.set_column_from_division("col_3", "col_1", "col_2")
+
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 0.0],
+        "col_3": [0.2, -1.0, np.inf],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()
