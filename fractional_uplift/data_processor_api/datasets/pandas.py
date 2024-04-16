@@ -261,9 +261,11 @@ class PandasDataset(base.Dataset):
     """Return the number of rows in the dataset."""
     return len(self.data)
 
-  def shuffle_inplace(self) -> None:
+  def shuffle_inplace(self, random_seed: int = 0) -> None:
     """Shuffles the rows of the dataset inplace."""
-    raise NotImplementedError()
+    self.data = self.data.sample(
+        frac=1.0, ignore_index=True, random_state=random_seed
+    )
 
   def get_columns(self) -> list[str]:
     """Returns the column names in the dataset."""

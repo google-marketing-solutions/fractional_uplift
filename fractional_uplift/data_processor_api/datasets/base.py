@@ -159,7 +159,7 @@ class Dataset(abc.ABC):
     ...
 
   @abc.abstractmethod
-  def shuffle_inplace(self) -> None:
+  def shuffle_inplace(self, random_seed: int = 0) -> None:
     """Shuffles the rows of the dataset inplace."""
     ...
 

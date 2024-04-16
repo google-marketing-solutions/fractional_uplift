@@ -576,6 +576,30 @@ class PandasDatasetTest(parameterized.TestCase):
 
     self.assertLen(data, 3)
 
+  def test_shuffle_inplace_shuffles_the_rows(self):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0, 4.0, 2.0],
+        "col_2": [5.0, 5.0, 0.0, 10.0, 5.0],
+    })
+    data = datasets.PandasDataset(input_data)
+    data.shuffle_inplace()
+
+    # Assert the dataframes are not equal (because they are shuffled now)
+    with self.assertRaises(AssertionError):
+      pd.testing.assert_frame_equal(data.as_pd_dataframe(), input_data)
+
+    # But after sorting they are equal, because the rows haven't changed,
+    # they were just shuffled
+    sorted_output_data = (
+        data.as_pd_dataframe()
+        .sort_values(by=["col_1", "col_2"])
+        .reset_index(drop=True)
+    )
+    sorted_input_data = input_data.sort_values(
+        by=["col_1", "col_2"]
+    ).reset_index(drop=True)
+    pd.testing.assert_frame_equal(sorted_output_data, sorted_input_data)
+
 
 if __name__ == "__main__":
   absltest.main()
