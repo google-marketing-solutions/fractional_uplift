@@ -201,11 +201,11 @@ class PandasDataset(base.Dataset):
     non_none_labels_and_weights = {}
     if label_column:
       non_none_labels_and_weights[label_column] = ColumnName.LABEL.value
-      if not pd.api.types.is_numeric_dtype(self.data[label_column]):
+      if not self.column_is_numeric(label_column):
         raise ValueError("The label column must be numeric.")
     if weight_column:
       non_none_labels_and_weights[weight_column] = ColumnName.WEIGHT.value
-      if not pd.api.types.is_numeric_dtype(self.data[weight_column]):
+      if not self.column_is_numeric(weight_column):
         raise ValueError("The weight column must be numeric.")
       if not self.column_is_not_negative(weight_column):
         raise ValueError("The weight column must be non-negative.")
@@ -274,3 +274,7 @@ class PandasDataset(base.Dataset):
   def column_is_finite(self, column_name: str) -> bool:
     """Returns true if the column is finite for all rows."""
     return np.all(np.isfinite(self.data[column_name]))
+
+  def column_is_numeric(self, column_name: str) -> bool:
+    """Returns true if the column is float or int for all rows."""
+    return pd.api.types.is_numeric_dtype(self.data[column_name])

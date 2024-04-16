@@ -625,6 +625,24 @@ class PandasDatasetTest(parameterized.TestCase):
     with self.assertRaises(TypeError):
       data.column_is_finite("col_1")
 
+  @parameterized.parameters(float, int)
+  def test_column_is_numeric_returns_true_for_numeric_dtypes(
+      self, numeric_dtype
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+    })
+    input_data["col_1"] = input_data["col_1"].astype(numeric_dtype)
+    data = datasets.PandasDataset(input_data)
+    self.assertTrue(data.column_is_numeric("col_1"))
+
+  def test_column_is_numeric_returns_false_for_non_numeric_dtypes(self):
+    input_data = pd.DataFrame({
+        "col_1": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+    self.assertFalse(data.column_is_numeric("col_1"))
+
 
 if __name__ == "__main__":
   absltest.main()
