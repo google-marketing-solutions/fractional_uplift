@@ -643,6 +643,22 @@ class PandasDatasetTest(parameterized.TestCase):
     data = datasets.PandasDataset(input_data)
     self.assertFalse(data.column_is_numeric("col_1"))
 
+  def test_set_column_from_equality_sets_new_column_as_equality(self):
+    input_data = pd.DataFrame(
+        {"col_1": ["a", "b", "c"], "col_2": ["a", "h", "c"]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.set_column_from_equality("col_3", "col_1", "col_2")
+    expected_output_data = pd.DataFrame({
+        "col_1": ["a", "b", "c"],
+        "col_2": ["a", "h", "c"],
+        "col_3": [True, False, True],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()

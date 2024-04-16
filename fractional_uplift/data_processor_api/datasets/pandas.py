@@ -278,3 +278,10 @@ class PandasDataset(base.Dataset):
   def column_is_numeric(self, column_name: str) -> bool:
     """Returns true if the column is float or int for all rows."""
     return pd.api.types.is_numeric_dtype(self.data[column_name])
+
+  def set_column_from_equality(
+      self, output_column_name: str, column_1: str, column_2: str
+  ) -> "PandasDataset":
+    """Creates a column as the equality of column_1 and column_2."""
+    self.data[output_column_name] = self.data[column_1] == self.data[column_2]
+    return self

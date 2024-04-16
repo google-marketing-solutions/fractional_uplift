@@ -217,3 +217,11 @@ class Dataset(abc.ABC):
   @abc.abstractmethod
   def column_is_numeric(self, column_name: str) -> bool:
     """Returns true if the column is float or int for all rows."""
+    ...
+
+  @abc.abstractmethod
+  def set_column_from_equality(
+      self, output_column_name: str, column_1: str, column_2: str
+  ) -> "Dataset":
+    """Creates a column as the equality of column_1 and column_2."""
+    ...
