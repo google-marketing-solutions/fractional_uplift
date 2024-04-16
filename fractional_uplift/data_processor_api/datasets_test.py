@@ -514,6 +514,57 @@ class PandasDatasetTest(parameterized.TestCase):
     ).labels_are_constant()
     self.assertIsNone(result)
 
+  def test_label_average_returns_simple_mean_of_labels_if_weights_are_not_set(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 3.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+        label_column="col_2",
+    ).label_average()
+    self.assertEqual(result, 2.0)
+
+  def test_label_average_returns_weighted_mean_of_labels_if_weights_are_set(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, -2.0, 3.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+        label_column="col_2",
+        weight_column="col_1",
+    ).label_average()
+    self.assertAlmostEqual(result, 10.0 / 6.0)
+
+  def test_label_average_returns_none_if_labels_have_not_been_set(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, 5.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+    ).label_average()
+    self.assertIsNone(result)
+
 
 if __name__ == "__main__":
   absltest.main()

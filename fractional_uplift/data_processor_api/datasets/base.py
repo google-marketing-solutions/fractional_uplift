@@ -143,7 +143,14 @@ class Dataset(abc.ABC):
 
   @abc.abstractmethod
   def label_average(self) -> float | None:
-    """Return the average label, weighted by the weights if they exist."""
+    """Return the average label, weighted by the weights if they exist.
+
+    The labels are found in the column named "label_", and the weights are
+    found in the column named "weight_", which are set with
+    select_features_labels_and_weights().
+
+    If the column label_ does not exist, then this returs None.
+    """
     ...
 
   @abc.abstractmethod

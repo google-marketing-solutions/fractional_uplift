@@ -237,8 +237,25 @@ class PandasDataset(base.Dataset):
     return np.allclose(label_values, label_values[0])
 
   def label_average(self) -> float | None:
-    """Return the average label, weighted by the weights if they exist."""
-    raise NotImplementedError()
+    """Return the average label, weighted by the weights if they exist.
+
+    The labels are found in the column named "label_", and the weights are
+    found in the column named "weight_", which are set with
+    select_features_labels_and_weights().
+
+    If the column label_ does not exist, then this returs None.
+    """
+    if self.column_exists(ColumnName.LABEL.value):
+      labels = self.data[ColumnName.LABEL.value].values
+    else:
+      return None
+
+    if self.column_exists(ColumnName.WEIGHT.value):
+      weights = self.data[ColumnName.WEIGHT.value].values
+    else:
+      weights = np.ones(len(self.data))
+
+    return np.sum(labels * weights) / np.sum(weights)
 
   def __len__(self) -> int:
     """Return the number of rows in the dataset."""
