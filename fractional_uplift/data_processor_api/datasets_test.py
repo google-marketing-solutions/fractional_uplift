@@ -462,6 +462,58 @@ class PandasDatasetTest(parameterized.TestCase):
           weight_column="col_1",
       )
 
+  def test_labels_are_constant_returns_true_if_labels_are_all_the_same(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, 5.0, 5.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+        label_column="col_2",
+        weight_column="col_1",
+    ).labels_are_constant()
+    self.assertTrue(result)
+
+  def test_labels_are_constant_returns_false_if_labels_are_not_the_same(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, 5.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+        label_column="col_2",
+        weight_column="col_1",
+    ).labels_are_constant()
+    self.assertFalse(result)
+
+  def test_labels_are_constant_returns_none_if_labels_have_not_been_set(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, 5.0, 0.0],
+        "col_3": [5.0, -4.0, 0.0],
+        "col_4": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    result = data.select_features_labels_and_weights(
+        feature_columns=["col_3", "col_4"],
+    ).labels_are_constant()
+    self.assertIsNone(result)
+
 
 if __name__ == "__main__":
   absltest.main()

@@ -134,10 +134,10 @@ class Dataset(abc.ABC):
 
   @abc.abstractmethod
   def labels_are_constant(self) -> bool | None:
-    """Are the labels constant?
+    """Returns true if the labels are constant, or None if they do not exist.
 
-    Returns true if the labels are the same for every row in the dataset,
-    false otherwise, and None if there are no labels.
+    The labels are found in the column named "label_", which is set with
+    select_features_labels_and_weights().
     """
     ...
 

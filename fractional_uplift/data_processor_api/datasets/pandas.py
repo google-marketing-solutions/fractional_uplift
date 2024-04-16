@@ -225,12 +225,16 @@ class PandasDataset(base.Dataset):
     return self
 
   def labels_are_constant(self) -> bool | None:
-    """Are the labels constant?
+    """Returns true if the labels are constant, or None if they do not exist.
 
-    Returns true if the labels are the same for every row in the dataset,
-    false otherwise, and None if there are no labels.
+    The labels are found in the column named "label_", which is set with
+    select_features_labels_and_weights().
     """
-    raise NotImplementedError()
+    if not self.column_exists(ColumnName.LABEL.value):
+      return None
+
+    label_values = self.data[ColumnName.LABEL.value].values
+    return np.allclose(label_values, label_values[0])
 
   def label_average(self) -> float | None:
     """Return the average label, weighted by the weights if they exist."""
