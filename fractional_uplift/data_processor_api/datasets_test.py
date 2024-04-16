@@ -600,6 +600,31 @@ class PandasDatasetTest(parameterized.TestCase):
     ).reset_index(drop=True)
     pd.testing.assert_frame_equal(sorted_output_data, sorted_input_data)
 
+  def test_column_is_finite_returns_true_for_finite_column(self):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0, 4.0, 2.0],
+    })
+    data = datasets.PandasDataset(input_data)
+    self.assertTrue(data.column_is_finite("col_1"))
+
+  @parameterized.parameters(np.inf, np.nan)
+  def test_column_is_finite_returns_false_if_non_finite_value_exists(
+      self, non_finite_value
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0, 4.0, non_finite_value],
+    })
+    data = datasets.PandasDataset(input_data)
+    self.assertFalse(data.column_is_finite("col_1"))
+
+  def test_column_is_finite_raises_type_error_if_column_is_not_numeric(self):
+    input_data = pd.DataFrame({
+        "col_1": ["a", "b", "c"],
+    })
+    data = datasets.PandasDataset(input_data)
+    with self.assertRaises(TypeError):
+      data.column_is_finite("col_1")
+
 
 if __name__ == "__main__":
   absltest.main()

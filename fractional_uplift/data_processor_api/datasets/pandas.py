@@ -270,3 +270,7 @@ class PandasDataset(base.Dataset):
   def get_columns(self) -> list[str]:
     """Returns the column names in the dataset."""
     return self.data.columns.values.tolist()
+
+  def column_is_finite(self, column_name: str) -> bool:
+    """Returns true if the column is finite for all rows."""
+    return np.all(np.isfinite(self.data[column_name]))

@@ -208,3 +208,8 @@ class Dataset(abc.ABC):
   def get_columns(self) -> list[str]:
     """Returns the column names in the dataset."""
     ...
+
+  @abc.abstractmethod
+  def column_is_finite(self, column_name: str) -> bool:
+    """Returns true if the column is finite for all rows."""
+    ...
