@@ -565,6 +565,17 @@ class PandasDatasetTest(parameterized.TestCase):
     ).label_average()
     self.assertIsNone(result)
 
+  def test_len_returns_the_number_of_rows_in_the_dataset(
+      self,
+  ):
+    input_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [5.0, 5.0, 0.0],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    self.assertLen(data, 3)
+
 
 if __name__ == "__main__":
   absltest.main()

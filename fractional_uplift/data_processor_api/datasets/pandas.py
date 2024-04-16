@@ -259,7 +259,7 @@ class PandasDataset(base.Dataset):
 
   def __len__(self) -> int:
     """Return the number of rows in the dataset."""
-    raise NotImplementedError()
+    return len(self.data)
 
   def shuffle_inplace(self) -> None:
     """Shuffles the rows of the dataset inplace."""
