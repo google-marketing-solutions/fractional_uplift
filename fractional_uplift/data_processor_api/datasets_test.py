@@ -659,6 +659,22 @@ class PandasDatasetTest(parameterized.TestCase):
         output_data.as_pd_dataframe(), expected_output_data
     )
 
+  def test_set_column_from_greater_than_sets_new_column_correctly(self):
+    input_data = pd.DataFrame(
+        {"col_1": [1.0, 2.0, 3.0], "col_2": [1.0, 1.5, 4.0]}
+    )
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.set_column_from_greater_than("col_3", "col_1", "col_2")
+    expected_output_data = pd.DataFrame({
+        "col_1": [1.0, 2.0, 3.0],
+        "col_2": [1.0, 1.5, 4.0],
+        "col_3": [False, True, False],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()
