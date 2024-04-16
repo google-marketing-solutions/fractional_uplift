@@ -87,6 +87,33 @@ class DataProcessorTest(parameterized.TestCase):
 
     self.assertCountEqual(processor.feature_columns, ["X1", "X2", "X3"])
 
+  @parameterized.parameters(
+      "my_maximize_kpi",
+      "my_constraint_kpi",
+      "my_constraint_offset_kpi",
+      "treatment_propensity",
+      "is_treated",
+      "sample_weight",
+  )
+  def test_raises_error_when_columns_dont_exist_in_input_dataset(
+      self, missing_column
+  ):
+    dataset = datasets.PandasDataset(
+        self.default_input_data.drop(columns=[missing_column])
+    )
+    with self.assertRaisesRegex(
+        ValueError, f"{missing_column} does not exist in the dataset."
+    ):
+      data_processor.DataProcessor(
+          dataset,
+          maximize_kpi_column="my_maximize_kpi",
+          constraint_kpi_column="my_constraint_kpi",
+          constraint_offset_kpi_column="my_constraint_offset_kpi",
+          treatment_propensity_column="treatment_propensity",
+          is_treated_column="is_treated",
+          sample_weight_column="sample_weight",
+      )
+
 
 if __name__ == "__main__":
   absltest.main()

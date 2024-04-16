@@ -72,3 +72,64 @@ class DataProcessor:
         for c in self.input_dataset.get_columns()
         if c not in self.other_columns
     ]
+
+    self._validate_input_columns_exist()
+
+  def _is_missing(
+      self, column_name: str | None, required: bool = False
+  ) -> bool:
+    """Returns true if the column is missing from the input_dataset.
+
+    If the column name is None and it is not required, then it is not considered
+    missing. However if it is None and it is required then it is considered
+    missing.
+
+    Args:
+      column_name: The name of the column to check.
+      required: If true, the column must not be None.
+
+    Returns:
+      True if the column is missing from the dataset, false otherwise.
+    """
+    if column_name is None and not required:
+      return False
+    return not self.input_dataset.column_exists(column_name)
+
+  def _validate_input_columns_exist(self) -> None:
+    """Validates that the input columns exist in the dataset."""
+
+    if self._is_missing(self.maximize_kpi_column, required=True):
+      raise ValueError(
+          f'maximize_kpi_column {self.maximize_kpi_column} does not exist in'
+          ' the dataset.'
+      )
+
+    if self._is_missing(self.is_treated_column, required=True):
+      raise ValueError(
+          f'is_treated_column {self.is_treated_column} does not exist in the'
+          ' dataset.'
+      )
+
+    if self._is_missing(self.treatment_propensity_column):
+      raise ValueError(
+          f'treatment_propensity_column {self.treatment_propensity_column} does'
+          ' not exist in the dataset.'
+      )
+
+    if self._is_missing(self.constraint_kpi_column):
+      raise ValueError(
+          f'constraint_kpi_column {self.constraint_kpi_column} does not exist'
+          ' in the dataset.'
+      )
+
+    if self._is_missing(self.constraint_offset_kpi_column):
+      raise ValueError(
+          'constraint_offset_kpi_column'
+          f' {self.constraint_offset_kpi_column} does not exist in the dataset.'
+      )
+
+    if self._is_missing(self.sample_weight_column):
+      raise ValueError(
+          f'sample_weight_column {self.sample_weight_column} does not exist in'
+          ' the dataset.'
+      )
