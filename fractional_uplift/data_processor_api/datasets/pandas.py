@@ -299,3 +299,10 @@ class PandasDataset(base.Dataset):
     """Creates a column which is true if column_1 is less than column_2."""
     self.data[output_column_name] = self.data[column_1] < self.data[column_2]
     return self
+
+  def set_column_from_and(
+      self, output_column_name: str, column_1: str, column_2: str
+  ) -> "PandasDataset":
+    """Creates a column which is true if column_1 and column_2 are true."""
+    self.data[output_column_name] = self.data[column_1] & self.data[column_2]
+    return self

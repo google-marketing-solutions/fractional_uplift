@@ -691,6 +691,23 @@ class PandasDatasetTest(parameterized.TestCase):
         output_data.as_pd_dataframe(), expected_output_data
     )
 
+  def test_set_column_from_and_sets_new_column_correctly(self):
+    input_data = pd.DataFrame({
+        "col_1": [True, True, False, False],
+        "col_2": [True, False, True, False],
+    })
+    data = datasets.PandasDataset(input_data)
+
+    output_data = data.set_column_from_and("col_3", "col_1", "col_2")
+    expected_output_data = pd.DataFrame({
+        "col_1": [True, True, False, False],
+        "col_2": [True, False, True, False],
+        "col_3": [True, False, False, False],
+    })
+    pd.testing.assert_frame_equal(
+        output_data.as_pd_dataframe(), expected_output_data
+    )
+
 
 if __name__ == "__main__":
   absltest.main()
