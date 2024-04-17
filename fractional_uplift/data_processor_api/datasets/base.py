@@ -232,3 +232,10 @@ class Dataset(abc.ABC):
   ) -> "Dataset":
     """Creates a column which is true if column_1 is greater than column_2."""
     ...
+
+  @abc.abstractmethod
+  def set_column_from_less_than(
+      self, output_column_name: str, column_1: str, column_2: str
+  ) -> "Dataset":
+    """Creates a column which is true if column_1 is less than column_2."""
+    ...
